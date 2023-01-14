@@ -1,0 +1,37 @@
+RESOURCE_FILES = hud.png dial.png  bg0.png girl0.png boobs0.png snd0.ogg bg1.png girl1.png boobs1.png snd1.ogg bg2.png girl2.png boobs2.png snd2.ogg 
+
+WINRES_FILES = win32/sexy32.ico win32/sexy16.ico
+
+CC=gcc
+CFLAGS=-Iwin32/include
+LDFLAGS=-Lwin32/lib -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lSDL2_mixer -mwindows
+
+dist: sexy.exe
+	mkdir -p sexy_w32
+	mv sexy.exe sexy_w32
+	cp win32/*.dll sexy_w32
+	win32/7za.exe a -tzip sexy_w32.zip sexy_w32
+
+sexy.exe: res.o win_res.o framerate.o sexy.c
+	$(CC) $(CFLAGS) -o sexy.exe sexy.c win_res.o SDL2_framerate.o res.o resources.o $(LDFLAGS)
+
+win_res.o: $(WINRES_FILES)
+	windres -i win32\sexy.rc -o win_res.o  --include-dir=win32
+
+framerate.o: SDL2_framerate.c SDL2_framerate.h 
+	$(CC) $(CFLAGS) -c SDL2_framerate.c
+
+res.o: resources.o
+	$(CC) $(CFLAGS) -c res.c
+
+resources.o: $(RESOURCE_FILES)
+	python pack_resources.py $(RESOURCE_FILES)
+	$(CC) $(CFLAGS) -c resources.c
+
+clean:
+	rm -f *.o
+	rm -f *~
+
+distclean: clean
+	rm -f sexy.exe
+	rm -rf sexy_w32
