@@ -1,4 +1,5 @@
 # Sexy
+![screeshot](https://raw.githubusercontent.com/danieltabor/sexy_game/main/screenshot.jpg) 
 
 Simple game to demonstrate rumble capabilities of game controllers. 
 
