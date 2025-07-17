@@ -6,7 +6,7 @@ RESOURCE_FILES = $(wildcard resource_files/*)
 dist: sexy
 	./make_unix_dist.py sexy sexy_lin64
 	rm -f sexy
-	tar -czvf sexy_lin64.tgz sexy_lin64
+	tar -cJvf sexy_lin64.txz sexy_lin64
 
 sexy: resources.o res.o framerate.o sexy.c
 	$(CC) $(CFLAGS) -o sexy sexy.c SDL2_framerate.o res.o resources.o $(LDFLAGS)
@@ -29,5 +29,5 @@ clean:
 distclean: clean
 	rm -f resources.h
 	rm -f resources.c
-	rm -f sexy
+	rm -rf sexy_lin64
 	rm -f sexy_lin64.tgz

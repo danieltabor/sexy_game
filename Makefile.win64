@@ -1,0 +1,40 @@
+CC=x86_64-w64-mingw32-gcc
+WINRES=x86_64-w64-mingw32-windres
+CFLAGS=-Iwin64/include
+LDFLAGS=-Lwin64/lib -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lSDL2_mixer -mwindows
+RESOURCE_FILES = $(wildcard resource_files/*)
+WINRES_FILES = win64/sexy32.ico win64/sexy16.ico
+
+dist: sexy.exe
+	mkdir -p sexy_win64
+	mv sexy.exe sexy_win64
+	cp win64/bin/*.dll sexy_win64
+	zip sexy_win64.zip sexy_win64
+
+sexy.exe: res.o win_res.o framerate.o sexy.c
+	$(CC) $(CFLAGS) -o sexy.exe win_res.o SDL2_framerate.o res.o resources.o sexy.c $(LDFLAGS)
+
+win_res.o: $(WINRES_FILES)
+	$(WINRES) -i win64/sexy.rc -o win_res.o  --include-dir=win64
+
+framerate.o: SDL2_framerate.c SDL2_framerate.h 
+	$(CC) $(CFLAGS) -c SDL2_framerate.c
+
+res.o: resources.o
+	$(CC) $(CFLAGS) -c res.c
+
+resources.o: $(RESOURCE_FILES)
+	./pack_resources.py resource_files
+	$(CC) $(CFLAGS) -c resources.c
+
+clean:
+	rm -f *.o
+	rm -f *~
+	rm -f \#*
+
+distclean: clean
+	rm -f resources.h
+	rm -f resources.c
+	rm -f sexy.exe
+	rm -rf sexy_win64
+	rm -f sexy_win64.zip
